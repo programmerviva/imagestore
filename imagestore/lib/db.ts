@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
 
-const MONGODB_URL = process.env.MONGODB_URL!;
+const MONGODB_URI = process.env.MONGODB_URI!;
 
-if (!MONGODB_URL) {
-  throw new Error("Check your database connection string");
+if (!MONGODB_URI) {
+  throw new Error(
+    "Please define the MONGODB_URI environment variable inside .env.local"
+  );
 }
 
 let cached = global.mongoose;
@@ -13,7 +15,7 @@ if (!cached) {
 }
 
 export async function connectToDatabase() {
-  if (!cached.conn) {
+  if (cached.conn) {
     return cached.conn;
   }
 
@@ -22,15 +24,17 @@ export async function connectToDatabase() {
       bufferCommands: true,
       maxPoolSize: 10,
     };
+
     cached.promise = mongoose
-      .connect(MONGODB_URL, opts)
+      .connect(MONGODB_URI, opts)
       .then(() => mongoose.connection);
   }
 
   try {
     cached.conn = await cached.promise;
-  } catch {
+  } catch (e) {
     cached.promise = null;
+    throw e;
   }
 
   return cached.conn;

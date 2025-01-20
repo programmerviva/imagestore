@@ -7,7 +7,7 @@ import Script from "next/script";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "ImageKit Next.js Integration",
+  title: "ImageStore Next.js Integration",
   description: "Demo of ImageKit integration with Next.js",
 };
 
